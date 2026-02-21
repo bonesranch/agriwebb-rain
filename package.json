@@ -1,0 +1,14 @@
+{
+  "name": "agriwebb-rain",
+  "version": "1.0.0",
+  "description": "Scheduled cron Lambda function with Serverless Framework",
+  "scripts": {
+    "test": "python test_local.py",
+    "deploy": "serverless deploy",
+    "deploy:prod": "serverless deploy --stage prod",
+    "remove": "serverless remove"
+  },
+  "devDependencies": {
+    "serverless-python-requirements": "^1.2.0"
+  }
+}
