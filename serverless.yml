@@ -1,0 +1,80 @@
+org: bonesranch
+app: agriwebb-rain
+service: agriwebb-rain
+
+frameworkVersion: '4'
+
+provider:
+  name: aws
+  runtime: python3.12
+  region: ${opt:region, 'us-east-1'}
+  stage: ${opt:stage, 'dev'}
+  memorySize: 128
+  timeout: 30
+  environment:
+    STAGE: ${self:provider.stage}
+    REGION: ${self:provider.region}
+  iam:
+    role:
+      statements:
+        # Allow Lambda to read parameters from SSM Parameter Store
+        - Effect: Allow
+          Action:
+            - ssm:GetParameter
+            - ssm:GetParameters
+          Resource: 
+            - arn:aws:ssm:${self:provider.region}:*:parameter/bonesranch.agriwebb-rain.tempest.token
+            - arn:aws:ssm:${self:provider.region}:*:parameter/bonesranch.agriwebb-rain.tempest.station_id
+            - arn:aws:ssm:${self:provider.region}:*:parameter/bonesranch.agriwebb-rain.agriwebb.access_token
+            - arn:aws:ssm:${self:provider.region}:*:parameter/bonesranch.agriwebb-rain.agriwebb.farm_id
+
+functions:
+  rain:
+    handler: main.lambda_handler
+    description: Scheduled cron Lambda function
+    events:
+      # Run every day at 2:00 AM UTC
+      # Cron format: minute hour dayOfMonth month dayOfWeek
+      - schedule:
+          rate: cron(0 2 * * ? *)
+          enabled: true
+          input:
+            source: "aws.events"
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: non-linux
+    zip: true
+
+resources:
+  Resources:
+  # SNS Topic for email notifications
+    AlarmSnsTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: ${self:service}-alarms
+        Subscription:
+          - Protocol: email
+            Endpoint: ${env:ALARM_EMAIL}
+    # CloudWatch Alarm on function errors
+    LambdaErrorAlarm:
+      Type: AWS::CloudWatch::Alarm
+      Properties:
+        AlarmName: ${self:service}-errors
+        AlarmDescription: Lambda function errors detected
+        Namespace: AWS/Lambda
+        MetricName: Errors
+        Dimensions:
+          - Name: FunctionName
+            Value: !Ref RainLambdaFunction  # serverless appends "LambdaFunction"
+        Statistic: Sum
+        Period: 60
+        EvaluationPeriods: 1
+        Threshold: 1
+        ComparisonOperator: GreaterThanOrEqualToThreshold
+        TreatMissingData: notBreaching
+        AlarmActions:
+          - !Ref AlarmSnsTopic
