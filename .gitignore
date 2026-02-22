@@ -1,0 +1,30 @@
+# Serverless Framework
+.serverless/
+
+# Node
+node_modules/
+npm-debug.log
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.requirements/
+requirements.zip
+dist/
+build/
+.venv/
+venv/
+
+# Environment variables
+.env
+.env.*
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+.cursor/
+

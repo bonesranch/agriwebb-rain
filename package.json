@@ -8,7 +8,17 @@
     "deploy:prod": "serverless deploy --stage prod",
     "remove": "serverless remove"
   },
-  "devDependencies": {
-    "serverless-python-requirements": "^1.2.0"
-  }
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bonesranch/agriwebb-rain.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/bonesranch/agriwebb-rain/issues"
+  },
+  "homepage": "https://github.com/bonesranch/agriwebb-rain#readme"
 }
