@@ -33,10 +33,9 @@ functions:
     handler: main.lambda_handler
     description: Scheduled cron Lambda function
     events:
-      # Run every day at 2:00 AM UTC
-      # Cron format: minute hour dayOfMonth month dayOfWeek
+      # Run every day at 6:00 AM EST (11:00 AM UTC)
       - schedule:
-          rate: cron(0 2 * * ? *)
+          rate: cron(0 11 * * ? *)
           enabled: true
           input:
             source: "aws.events"
