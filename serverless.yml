@@ -41,13 +41,9 @@ functions:
           input:
             source: "aws.events"
 
-plugins:
-  - serverless-python-requirements
-
 custom:
   pythonRequirements:
-    dockerizePip: non-linux
-    zip: true
+    dockerizePip: true
 
 resources:
   Resources:
